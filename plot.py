@@ -5,16 +5,47 @@ def create_yield_curve_surface_plot(data):
     """
     Create animated surface plot
     """
+
     # Prepare data for surface plot
     x = data.columns.values  # Maturity
     y = data.index.values  # Time points
     z = data.values
 
     # Create figure
+    buttons = {
+        "type": "buttons",
+        "showactive": False,
+        "buttons": [
+            {
+                "label": "Play",
+                "method": "animate",
+                "args": [
+                    None,
+                    {
+                        "frame": {"duration": 100, "redraw": True},
+                        "fromcurrent": True,
+                    },
+                ],
+            },
+            {
+                "label": "Pause",
+                "method": "animate",
+                "args": [
+                    [None],
+                    {
+                        "frame": {"duration": 0, "redraw": False},
+                        "mode": "immediate",
+                        "transition": {"duration": 0},
+                    },
+                ],
+            },
+        ],
+    }
+
     fig = go.Figure(
         data=[
             go.Surface(
-                z=z, x=x, y=y, colorscale="Viridis", colorbar=dict(title="Yield (%)")
+                z=z, x=x, y=y, colorscale="Viridis", colorbar=dict(title="Taxa (%)")
             )
         ],
         layout=go.Layout(
@@ -24,41 +55,11 @@ def create_yield_curve_surface_plot(data):
                 yaxis_title="Data",
                 zaxis_title="Taxa (%)",
                 xaxis=dict(
-                    range=[x[-1], 0],
+                    range=[x[-1], x[0]],
                     tickformat=".2f",
                 ),
             ),
-            updatemenus=[
-                {
-                    "type": "buttons",
-                    "showactive": False,
-                    "buttons": [
-                        {
-                            "label": "Play",
-                            "method": "animate",
-                            "args": [
-                                None,
-                                {
-                                    "frame": {"duration": 100, "redraw": True},
-                                    "fromcurrent": True,
-                                },
-                            ],
-                        },
-                        {
-                            "label": "Pause",
-                            "method": "animate",
-                            "args": [
-                                [None],
-                                {
-                                    "frame": {"duration": 0, "redraw": False},
-                                    "mode": "immediate",
-                                    "transition": {"duration": 0},
-                                },
-                            ],
-                        },
-                    ],
-                }
-            ],
+            updatemenus=[buttons],
         ),
     )
 
